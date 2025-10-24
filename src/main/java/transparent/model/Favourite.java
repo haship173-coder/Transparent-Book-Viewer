@@ -1,12 +1,14 @@
 package transparent.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * Represents a favourite entry linking a user to a piece of content.  When a
  * user marks content as a favourite the current date and time is stored.
  */
-public class Favourite {
+public class Favourite implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int favouriteID;
     private int userID;
     private int contentID;
@@ -25,6 +27,13 @@ public class Favourite {
     public Favourite(int userID, int contentID) {
         this.userID = userID;
         this.contentID = contentID;
+    }
+
+    public Favourite(Favourite other) {
+        this.favouriteID = other.favouriteID;
+        this.userID = other.userID;
+        this.contentID = other.contentID;
+        this.addedDate = other.addedDate;
     }
 
     public int getFavouriteID() {

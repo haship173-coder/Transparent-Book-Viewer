@@ -10,7 +10,7 @@
     <center>
         <TableView fx:id="favouritesTable">
             <columns>
-                <TableColumn fx:id="colContent" text="Content ID" />
+                <TableColumn fx:id="colTitle" text="Title" prefWidth="240" />
                 <TableColumn fx:id="colAdded" text="Added" />
             </columns>
         </TableView>

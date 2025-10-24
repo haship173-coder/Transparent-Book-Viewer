@@ -1,0 +1,31 @@
+.root {
+    -fx-base: #1e1f29;
+    -fx-background-color: linear-gradient(#23242f, #181923);
+    -fx-text-fill: #f2f4ff;
+}
+
+.table-view {
+    -fx-background-color: #1f202b;
+    -fx-table-cell-border-color: #2b2d3b;
+    -fx-border-color: #2e3041;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #262838;
+}
+
+.button, .choice-box, .text-field {
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: rgba(255,255,255,0.08);
+    -fx-background-color: rgba(33,34,46,0.95);
+    -fx-text-fill: #f2f4ff;
+}
+
+.label {
+    -fx-text-fill: #f2f4ff;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #3940a0;
+}

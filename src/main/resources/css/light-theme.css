@@ -1,0 +1,26 @@
+.root {
+    -fx-base: #f5f6fa;
+    -fx-background-color: linear-gradient(#ffffff, #f5f6fa);
+    -fx-text-fill: #1d1d1d;
+}
+
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-table-cell-border-color: #e0e0e0;
+    -fx-border-color: #d2d6e6;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f8f9fb;
+}
+
+.button, .choice-box, .text-field {
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: rgba(0,0,0,0.08);
+    -fx-background-color: rgba(255,255,255,0.9);
+}
+
+.label {
+    -fx-text-fill: #1d1d1d;
+}

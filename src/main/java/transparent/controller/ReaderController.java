@@ -1,5 +1,7 @@
 package transparent.controller;
 
+import javafx.application.Platform;
+import javafx.concurrent.Worker;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -11,15 +13,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.epub.EpubReader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import transparent.model.Content;
 import transparent.model.HistoryRecord;
 import transparent.service.FavouriteService;
 import transparent.service.HistoryService;
+import transparent.ui.ThemeManager;
+import transparent.ui.ThemeManager.Theme;
 
 import javax.imageio.ImageIO;
+import java.awt.Desktop;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -27,22 +36,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubReader;
+import java.util.Locale;
 
 /**
  * Controller for the reader view.  Responsible for rendering the selected
  * content (EPUB, PDF, images, plain text) and persisting reading progress.
  */
 public class ReaderController {
-    private enum ReaderMode { TEXT, EPUB, PDF, IMAGE }
+    private enum ReaderMode { TEXT, EPUB, PDF, IMAGE, UNSUPPORTED }
 
     @FXML private Button prevButton;
     @FXML private Button nextButton;
     @FXML private Button closeButton;
     @FXML private Button favouriteButton;
+    @FXML private Button openExternalButton;
     @FXML private Label pageLabel;
     @FXML private Label titleLabel;
     @FXML private Label statusLabel;
@@ -51,6 +58,7 @@ public class ReaderController {
 
     private final HistoryService historyService = new HistoryService();
     private final FavouriteService favouriteService = new FavouriteService();
+    private final ThemeManager themeManager = ThemeManager.getInstance();
     private final WebView webView = new WebView();
     private final ImageView imageView = new ImageView();
 
@@ -67,15 +75,18 @@ public class ReaderController {
         nextButton.setOnAction(e -> showNextPage());
         closeButton.setOnAction(e -> handleClose());
         favouriteButton.setOnAction(e -> toggleFavourite());
+        openExternalButton.setOnAction(e -> openExternally());
+        openExternalButton.setDisable(true);
         configureWebView();
         imageView.setPreserveRatio(true);
         contentScroll.viewportBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
             if (mode == ReaderMode.IMAGE) {
                 imageView.setFitWidth(Math.max(200, newBounds.getWidth() - 40));
-            } else if (mode == ReaderMode.TEXT || mode == ReaderMode.EPUB) {
+            } else if (mode == ReaderMode.TEXT || mode == ReaderMode.EPUB || mode == ReaderMode.UNSUPPORTED) {
                 webView.setPrefWidth(Math.max(200, newBounds.getWidth() - 40));
             }
         });
+        themeManager.addListener(this::applyTheme);
     }
 
     private void configureWebView() {
@@ -83,12 +94,15 @@ public class ReaderController {
         webView.getEngine().setUserStyleSheetLocation(getClass().getResource("/webview-reader.css") != null
                 ? getClass().getResource("/webview-reader.css").toExternalForm()
                 : null);
+        webView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == Worker.State.SUCCEEDED) {
+                applyWebTheme(themeManager.getActiveTheme());
+            }
+        });
     }
 
     /**
      * Populate the reader with the selected content.
-     *
-     * @param content the content to display
      */
     public void setContent(Content content) {
         this.content = content;
@@ -97,6 +111,7 @@ public class ReaderController {
         loadContent();
         restoreProgress();
         updateFavouriteState();
+        updateExternalButton();
     }
 
     private void loadContent() {
@@ -106,22 +121,25 @@ public class ReaderController {
         Path path = Path.of(content.getFilePath());
         if (!Files.exists(path)) {
             showError("File missing", "Cannot find file: " + path);
+            mode = ReaderMode.UNSUPPORTED;
             return;
         }
-        String type = content.getFileType() == null ? "" : content.getFileType().toUpperCase();
+        String type = content.getFileType() == null ? "" : content.getFileType().toUpperCase(Locale.ROOT);
         try {
+            boolean handled = true;
             switch (type) {
                 case "EPUB" -> loadEpub(path);
                 case "PDF" -> loadPdf(path);
                 case "PNG", "JPG", "JPEG", "GIF", "BMP" -> loadImage(path);
                 case "TXT", "TEXT" -> loadText(path);
-                default -> {
-                    loadText(path);
-                    statusLabel.setText("Unknown file type, attempting plain text rendering");
-                }
+                default -> handled = false;
+            }
+            if (!handled) {
+                showUnsupported(path);
             }
         } catch (IOException ex) {
             showError("Unable to open file", ex.getMessage());
+            showUnsupported(path);
         }
     }
 
@@ -130,8 +148,9 @@ public class ReaderController {
         mode = ReaderMode.TEXT;
         totalPages = 1;
         currentPage = 0;
+        String theme = themeManager.getActiveTheme() == Theme.DARK ? "dark" : "light";
         String html = "<html><head><style>body{font-family:'Segoe UI',sans-serif;font-size:16px;line-height:1.6;padding:24px;}" +
-                "pre{white-space:pre-wrap;word-wrap:break-word;}</style></head><body><pre>" +
+                "pre{white-space:pre-wrap;word-wrap:break-word;}</style></head><body data-theme='" + theme + "'><pre>" +
                 escapeHtml(text) + "</pre></body></html>";
         webView.getEngine().loadContent(html);
         webView.setPrefWidth(Math.max(200, getViewportWidth() - 40));
@@ -174,6 +193,7 @@ public class ReaderController {
         }
         if (pdfPages.isEmpty()) {
             statusLabel.setText("PDF contains no pages");
+            showUnsupported(path);
             return;
         }
         mode = ReaderMode.PDF;
@@ -208,6 +228,7 @@ public class ReaderController {
         webView.setPrefWidth(Math.max(200, getViewportWidth() - 40));
         setContentNode(webView);
         updateNavigationState();
+        applyWebTheme(themeManager.getActiveTheme());
     }
 
     private void displayCurrentPdfPage() {
@@ -244,7 +265,10 @@ public class ReaderController {
         switch (mode) {
             case EPUB -> displayCurrentEpubPage();
             case PDF -> displayCurrentPdfPage();
-            case TEXT -> setContentNode(webView);
+            case TEXT, UNSUPPORTED -> {
+                setContentNode(webView);
+                applyWebTheme(themeManager.getActiveTheme());
+            }
             case IMAGE -> setContentNode(imageView);
         }
         updateNavigationState();
@@ -253,12 +277,14 @@ public class ReaderController {
 
     private void updateNavigationState() {
         pageLabel.setText("Page " + (currentPage + 1) + " / " + totalPages);
-        prevButton.setDisable(currentPage <= 0);
-        nextButton.setDisable(currentPage >= totalPages - 1);
+        boolean multiPage = totalPages > 1;
+        prevButton.setDisable(!multiPage || currentPage <= 0);
+        nextButton.setDisable(!multiPage || currentPage >= totalPages - 1);
     }
 
     private void restoreProgress() {
-        if (CurrentUser.get() == null) {
+        if (CurrentUser.get() == null || content == null) {
+            displayCurrentPage();
             return;
         }
         HistoryRecord record = historyService.getLatestEntry(CurrentUser.get().getUserID(), content.getContentID());
@@ -267,7 +293,7 @@ public class ReaderController {
             return;
         }
         int page = Math.max(1, record.getPageNumber());
-        currentPage = Math.min(page - 1, totalPages - 1);
+        currentPage = Math.min(page - 1, Math.max(totalPages - 1, 0));
         displayCurrentPage();
         statusLabel.setText("Resumed from page " + page);
     }
@@ -294,8 +320,7 @@ public class ReaderController {
             showError("Not logged in", "Please login to manage favourites.");
             return;
         }
-        favouriteService.toggleFavourite(CurrentUser.get().getUserID(), content.getContentID());
-        boolean favourite = favouriteService.isFavourite(CurrentUser.get().getUserID(), content.getContentID());
+        boolean favourite = favouriteService.toggleFavourite(CurrentUser.get().getUserID(), content.getContentID());
         favouriteButton.setText(favourite ? "Remove favourite" : "Add to favourites");
         statusLabel.setText(favourite ? "Added to favourites" : "Removed from favourites");
     }
@@ -313,12 +338,69 @@ public class ReaderController {
         closeButton.getScene().getWindow().hide();
     }
 
+    private void openExternally() {
+        if (content == null) {
+            return;
+        }
+        try {
+            if (!Desktop.isDesktopSupported()) {
+                showError("Unavailable", "Opening files externally is not supported on this platform.");
+                return;
+            }
+            Desktop.getDesktop().open(new File(content.getFilePath()));
+            if (CurrentUser.get() != null) {
+                historyService.saveProgress(CurrentUser.get().getUserID(), content.getContentID(), currentPage + 1);
+            }
+        } catch (IOException ex) {
+            showError("Unable to open externally", ex.getMessage());
+        }
+    }
+
+    private void updateExternalButton() {
+        boolean supported = Desktop.isDesktopSupported()
+                && content != null
+                && Files.exists(Path.of(content.getFilePath()));
+        openExternalButton.setDisable(!supported);
+    }
+
+    private void showUnsupported(Path path) {
+        mode = ReaderMode.UNSUPPORTED;
+        totalPages = 1;
+        currentPage = 0;
+        String theme = themeManager.getActiveTheme() == Theme.DARK ? "dark" : "light";
+        String message = "<html><body data-theme='" + theme + "'><div style='font-family:sans-serif;font-size:16px;padding:24px;'>"
+                + "<p><strong>Unsupported file type.</strong></p>"
+                + "<p>Use the <em>Open externally</em> button to launch the file in a native application.</p>"
+                + "</div></body></html>";
+        webView.getEngine().loadContent(message);
+        setContentNode(webView);
+        updateNavigationState();
+        statusLabel.setText("Unsupported format: " + path.getFileName());
+    }
+
     private void showError(String header, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Transparent");
         alert.setHeaderText(header);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void applyTheme(Theme theme) {
+        applyWebTheme(theme);
+        Platform.runLater(this::updateExternalButton);
+    }
+
+    private void applyWebTheme(Theme theme) {
+        Platform.runLater(() -> {
+            try {
+                webView.getEngine().executeScript(
+                        "if (document && document.body){document.body.setAttribute('data-theme','" +
+                                theme.name().toLowerCase(Locale.ROOT) + "');}");
+            } catch (Exception ignored) {
+                // WebView may not be ready yet
+            }
+        });
     }
 
     private static String escapeHtml(String text) {
