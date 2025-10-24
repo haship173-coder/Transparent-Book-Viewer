@@ -15,6 +15,9 @@
             <TextField fx:id="searchField" promptText="Search title" />
             <Button fx:id="searchButton" text="Search" />
             <Button fx:id="openButton" text="Add File" />
+            <Button fx:id="readButton" text="Open Reader" disable="true" />
+            <Button fx:id="infoButton" text="Info" disable="true" />
+            <Button fx:id="toggleFavouriteButton" text="Favourite" disable="true" />
             <Button fx:id="historyButton" text="History" />
             <Button fx:id="favouritesButton" text="Favourites" />
         </HBox>
@@ -25,6 +28,7 @@
                 <TableColumn fx:id="colTitle" text="Title" />
                 <TableColumn fx:id="colType" text="Type" />
                 <TableColumn fx:id="colSize" text="Size (bytes)" />
+                <TableColumn fx:id="colAdded" text="Added" />
             </columns>
         </TableView>
     </center>
