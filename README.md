@@ -1,30 +1,45 @@
-# Transparent Book & Art Viewer
+📖 Transparent Book & Art Viewer
 
-This repository contains the source code for **Transparent**, a desktop application that allows users to view and manage digital books and artwork on Windows.  The goal of this project is to provide a clean and simple interface for opening PDFs, images and other common formats while tracking your reading progress and favourites.
+Ứng dụng Transparent giúp người dùng xem và quản lý sách điện tử và tranh ảnh trên máy tính (Windows).
+Mục tiêu của dự án là mang lại giao diện gọn gàng, dễ sử dụng, hỗ trợ các định dạng phổ biến như PDF, hình ảnh, văn bản, đồng thời ghi nhớ tiến trình đọc và nội dung yêu thích.
 
-## Main features
+✨ Các tính năng chính
 
-- **Username login** – the application only asks for a username to identify you; there is no password system.
-- **Open files** – view PDF, image (JPEG/PNG) and other formats.  When you close a file the current page number is saved automatically.
-- **Search** – search your library by title.
-- **Reading history** – automatically save the last page viewed for each book/comic so you can resume later.
-- **Favourites** – mark items as favourites for quick access.
+Đăng nhập bằng Username – Chỉ cần nhập tên người dùng để nhận dạng, không cần mật khẩu.
 
-## Technology
+Mở file – Mở và đọc các định dạng phổ biến như PDF, JPG, PNG, TXT….
+Khi đóng file, trang đang đọc sẽ được lưu tự động vào lịch sử.
 
-This project is built using the following technologies:
+Phân loại nội dung – Khi thêm file, có thể nhập Thể loại (manga, tiểu thuyết, tranh nghệ thuật, v.v.) và Tags.
+Bảng thư viện hiển thị hai cột này và cho phép lọc theo thể loại hoặc tags.
 
-- **Java 17**
-- **JavaFX 17** for the user interface
-- **SQL Server Express** for data storage (users, contents, history and favourites)
-- **Apache PDFBox** for rendering PDF files
-- **JavaFX ImageView** for displaying images
+Tìm kiếm và lọc – Tìm kiếm theo tiêu đề, lọc theo thể loại hoặc tags để nhanh chóng tìm nội dung mong muốn.
 
-## Project structure
+Sắp xếp – Cho phép sắp xếp danh sách thư viện theo Tiêu đề, Ngày thêm, Kích thước hoặc Loại file.
 
-The Maven project is organised into packages following a typical layered architecture.  Models represent your data, DAOs handle database access, services encapsulate business logic and controllers respond to UI events.
+Xem trước (Preview) – Cột Preview hiển thị ảnh thu nhỏ đối với file ảnh; các định dạng khác hiển thị chỗ trống (có thể mở rộng với PDFBox).
 
-```
+Lịch sử đọc – Ghi lại trang cuối cùng và thời gian đọc, giúp bạn tiếp tục dễ dàng ở lần mở sau.
+
+Yêu thích – Cho phép đánh dấu nội dung yêu thích để truy cập nhanh hơn.
+
+Bộ sưu tập cá nhân (Collections) – Tạo playlist hoặc thư mục riêng để nhóm các nội dung liên quan.
+
+Giao diện sáng/tối – Có nút chuyển Theme để đổi giữa chủ đề sáng và tối ngay trong ứng dụng.
+
+🧩 Công nghệ sử dụng
+
+Java 17
+
+JavaFX 17 – Giao diện người dùng
+
+SQL Server Express – Lưu trữ dữ liệu người dùng, nội dung, lịch sử và yêu thích
+
+Apache PDFBox – Xử lý và hiển thị file PDF
+
+JavaFX ImageView – Hiển thị hình ảnh (JPG/PNG)
+
+🗂 Cấu trúc dự án
 Transparent/
 ├── README.md
 ├── pom.xml
@@ -63,6 +78,3 @@ Transparent/
             ├── reader.fxml
             ├── history.fxml
             └── favourites.fxml
-```
-
-Feel free to extend the skeleton classes with your own logic.  See the `docs` folder or your assignment brief for further design notes.
