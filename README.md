@@ -7,18 +7,14 @@ Mục tiêu của dự án là mang lại **giao diện đơn giản, sạch s�
 
 ## ✨ Tính năng chính
 
-- **Đăng nhập bằng Username** – Chỉ cần nhập tên người dùng để nhận dạng, **không cần mật khẩu**.  
-- **Mở file** – Mở và đọc các định dạng phổ biến như **PDF, JPG, PNG, TXT…**.  
-  Khi đóng file, **trang đang đọc sẽ được lưu tự động** vào lịch sử.  
-- **Phân loại nội dung** – Khi thêm file, có thể nhập **Thể loại** (manga, tiểu thuyết, tranh nghệ thuật, v.v.) và **Tags**.  
-  Bảng thư viện hiển thị hai cột này và cho phép **lọc theo thể loại hoặc tags**.  
-- **Tìm kiếm và lọc** – Tìm kiếm theo **tiêu đề**, lọc theo **thể loại hoặc tags** để nhanh chóng tìm nội dung mong muốn.  
-- **Sắp xếp** – Cho phép **sắp xếp danh sách thư viện** theo **Tiêu đề, Ngày thêm, Kích thước hoặc Loại file**.  
-- **Xem trước (Preview)** – Cột *Preview* hiển thị **ảnh thu nhỏ** đối với file ảnh; các định dạng khác hiển thị chỗ trống *(có thể mở rộng với PDFBox)*.  
-- **Lịch sử đọc** – Ghi lại **trang cuối cùng** và **thời gian đọc**, giúp bạn **tiếp tục dễ dàng** ở lần mở sau.  
-- **Yêu thích** – Cho phép **đánh dấu nội dung yêu thích** để truy cập nhanh hơn.  
-- **Bộ sưu tập cá nhân (Collections)** – Tạo **playlist hoặc thư mục riêng** để nhóm các nội dung liên quan.  
-- **Giao diện sáng/tối** – Có nút **chuyển Theme** để **đổi giữa chủ đề sáng và tối** ngay trong ứng dụng.  
+- **Đăng nhập siêu nhanh** – Chỉ cần nhập username, không cần mật khẩu hay đăng ký.
+- **Hoạt động hoàn toàn offline** – Khi SQL Server không sẵn sàng, dữ liệu tự động chuyển sang **kho lưu trữ file nội bộ**. Thư viện, lịch sử, yêu thích và người dùng đều được đọc/ghi mượt mà.
+- **Trình quản lý thư viện giàu thông tin** – Hiển thị tiêu đề, loại file, dung lượng, ngày thêm, thể loại và tags. Có thể **tìm kiếm**, **lọc theo tags hoặc thể loại**, và chỉnh sửa metadata ngay trong ứng dụng.
+- **Hộp thoại metadata** – Khi thêm nội dung mới hoặc cập nhật file, người dùng có thể bổ sung tác giả, mô tả, tags… trước khi lưu.
+- **Đánh dấu yêu thích & lịch sử đọc** – Bất cứ khi nào mở nội dung, ứng dụng ghi nhớ trang cuối cùng và thời điểm truy cập. Có sẵn danh sách lịch sử và yêu thích với thông tin chi tiết.
+- **Chuyển theme sáng/tối tức thời** – Thanh công cụ chứa lựa chọn theme áp dụng cho toàn bộ giao diện và cả trình đọc WebView.
+- **Trình đọc đa định dạng** – Hỗ trợ EPUB, PDF, hình ảnh và văn bản thuần. Với định dạng không hỗ trợ, người dùng có thể mở ngay bằng ứng dụng ngoài.
+- **Ghi nhớ tiến độ** – Sau khi đóng trình đọc, trang cuối cùng được lưu để lần sau tiếp tục liền mạch.
 
 ---
 
@@ -79,6 +75,7 @@ Transparent/
 
 ## 💡 Ghi chú
 
-- Khi đóng file, ứng dụng sẽ **tự động lưu tiến trình đọc** (trang cuối cùng và thời gian đọc).  
-- Các tính năng như **Preview PDF** và **Dark/Light Theme** có thể được mở rộng trong các phiên bản tương lai.  
-- Bạn có thể chỉnh sửa hoặc thêm **thể loại và tags** để cá nhân hóa thư viện của mình.  
+- Ứng dụng luôn ưu tiên kết nối SQL Server; nếu kết nối thất bại, **toàn bộ dữ liệu sẽ được lấy từ kho file `.transparent/library-store.bin`** trong thư mục người dùng.
+- Bộ lọc tìm kiếm hỗ trợ nhập nhiều tag (phân tách bởi dấu phẩy) và tùy chọn thể loại, giúp thu hẹp kết quả tức thì.
+- Khi đóng trình đọc hoặc mở file bằng ứng dụng ngoài, tiến độ đọc được lưu lại để lần sau tiếp tục.
+- Có thể chỉnh sửa metadata bất kỳ lúc nào bằng nút **Edit metadata** trong thư viện.

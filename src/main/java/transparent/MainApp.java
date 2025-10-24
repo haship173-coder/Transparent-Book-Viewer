@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import transparent.ui.ThemeManager;
 
 /**
  * Entry point for the JavaFX application.  Launches the login view.
@@ -14,7 +15,9 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
         stage.setTitle("Transparent - Login");
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        ThemeManager.getInstance().register(scene);
+        stage.setScene(scene);
         stage.show();
     }
 

@@ -1,8 +1,17 @@
 body {
-    color: #1c1c1c;
-    background-color: #f8f8f8;
     font-family: "Segoe UI", "Roboto", sans-serif;
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body[data-theme='light'] {
+    color: #1c1c1c;
+    background-color: #f8f8f8;
+}
+
+body[data-theme='dark'] {
+    color: #f5f5f5;
+    background-color: #121212;
 }
 
 img {
@@ -11,4 +20,8 @@ img {
 
 a {
     color: #5c6ac4;
+}
+
+body[data-theme='dark'] a {
+    color: #8aa9ff;
 }

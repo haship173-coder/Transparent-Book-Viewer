@@ -1,10 +1,13 @@
 package transparent.model;
 
+import java.io.Serializable;
+
 /**
  * Represents a user in the system.  Users are identified by a username only
  * according to the simplified requirements, so no password is stored.
  */
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int userID;
     private String username;
 
@@ -18,6 +21,11 @@ public class User {
 
     public User(String username) {
         this.username = username;
+    }
+
+    public User(User other) {
+        this.userID = other.userID;
+        this.username = other.username;
     }
 
     public int getUserID() {

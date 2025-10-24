@@ -21,6 +21,7 @@
                 <Label fx:id="pageLabel" text="Page 1 / 1" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Button fx:id="favouriteButton" text="Add to favourites" />
+                <Button fx:id="openExternalButton" text="Open externally" />
             </HBox>
         </VBox>
     </top>
