@@ -1,0 +1,82 @@
+name: Build Windows executable
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build-windows-executable:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build shaded application JAR
+        run: mvn -B -DskipTests package -Pwindows-exe -Dpackaging.platform=windows
+
+      - name: Resolve project version
+        id: project-version
+        shell: pwsh
+        run: |
+          $version = mvn help:evaluate -Dexpression=project.version -q -DforceStdout
+          if (-not $version) {
+            throw 'Unable to determine project version'
+          }
+          $sanitized = $version -replace '[^0-9\.]', '.'
+          if ([string]::IsNullOrWhiteSpace($sanitized)) {
+            $sanitized = '1.0.0'
+          }
+          # Collapse duplicate dots and trim
+          $sanitized = $sanitized -replace '\.+', '.'
+          $sanitized = $sanitized.Trim('.')
+          if ([string]::IsNullOrWhiteSpace($sanitized)) {
+            $sanitized = '1.0.0'
+          }
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo "sanitized=$sanitized" >> $env:GITHUB_OUTPUT
+
+      - name: Create Windows installer
+        shell: pwsh
+        run: |
+          $dist = Join-Path $PWD 'dist'
+          New-Item -ItemType Directory -Force -Path $dist | Out-Null
+
+          $shadedJar = Get-ChildItem -Path (Join-Path $PWD 'target') -Filter '*TransparentBookViewer.jar' | Select-Object -First 1
+          if (-not $shadedJar) {
+            throw 'Shaded JAR not found in target directory.'
+          }
+
+          jpackage `
+            --type exe `
+            --input (Join-Path $PWD 'target') `
+            --dest $dist `
+            --name 'TransparentBookViewer' `
+            --main-jar $shadedJar.Name `
+            --main-class 'transparent.MainApp' `
+            --app-version '${{ steps.project-version.outputs.sanitized }}' `
+            --win-dir-chooser `
+            --win-shortcut
+
+          $exe = Get-ChildItem -Path $dist -Filter '*.exe' | Select-Object -First 1
+          if (-not $exe) {
+            throw 'Failed to create Windows executable.'
+          }
+
+          $newName = "TransparentBookViewer-${{ steps.project-version.outputs.version }}.exe"
+          $safeName = $newName -replace '[^a-zA-Z0-9\.-]', '-'
+          Rename-Item -Path $exe.FullName -NewName $safeName
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
