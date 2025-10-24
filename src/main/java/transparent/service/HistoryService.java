@@ -44,4 +44,20 @@ public class HistoryService {
             return List.of();
         }
     }
+
+    /**
+     * Retrieve the most recent history record for a user and content pair.
+     *
+     * @param userId    the user ID
+     * @param contentId the content ID
+     * @return the {@link HistoryRecord} if it exists, otherwise {@code null}
+     */
+    public HistoryRecord getLatestEntry(int userId, int contentId) {
+        try {
+            return historyDAO.findHistory(userId, contentId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

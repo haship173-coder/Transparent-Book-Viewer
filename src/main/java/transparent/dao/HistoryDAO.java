@@ -77,4 +77,32 @@ public class HistoryDAO {
             return list;
         }
     }
+
+    /**
+     * Find a single history record for a given user and content combination.
+     *
+     * @param userId    the user ID
+     * @param contentId the content ID
+     * @return the record if present, otherwise {@code null}
+     * @throws SQLException if a database error occurs
+     */
+    public HistoryRecord findHistory(int userId, int contentId) throws SQLException {
+        String sql = "SELECT TOP 1 * FROM History WHERE UserID = ? AND ContentID = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, contentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new HistoryRecord(
+                        rs.getInt("HistoryID"),
+                        rs.getInt("UserID"),
+                        rs.getInt("ContentID"),
+                        rs.getTimestamp("LastReadTime").toLocalDateTime(),
+                        rs.getInt("PageNumber")
+                );
+            }
+            return null;
+        }
+    }
 }

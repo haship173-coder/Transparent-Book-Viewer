@@ -1,0 +1,14 @@
+body {
+    color: #1c1c1c;
+    background-color: #f8f8f8;
+    font-family: "Segoe UI", "Roboto", sans-serif;
+    line-height: 1.6;
+}
+
+img {
+    max-width: 100%;
+}
+
+a {
+    color: #5c6ac4;
+}

@@ -72,4 +72,23 @@ public class FavouriteDAO {
             return list;
         }
     }
+
+    /**
+     * Determine whether a user has marked the given content as a favourite.
+     *
+     * @param userId    the user ID
+     * @param contentId the content ID
+     * @return {@code true} if a favourite entry exists
+     * @throws SQLException if a database error occurs
+     */
+    public boolean isFavourite(int userId, int contentId) throws SQLException {
+        String sql = "SELECT 1 FROM Favourites WHERE UserID = ? AND ContentID = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, contentId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        }
+    }
 }

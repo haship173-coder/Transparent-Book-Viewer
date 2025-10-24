@@ -4,6 +4,7 @@ import transparent.dao.ContentDAO;
 import transparent.model.Content;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -66,6 +67,7 @@ public class ContentService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        content.setDayAdded(LocalDateTime.now());
         return content;
     }
 }

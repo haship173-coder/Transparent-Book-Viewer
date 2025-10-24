@@ -43,4 +43,20 @@ public class FavouriteService {
             return List.of();
         }
     }
+
+    /**
+     * Check whether the given content is marked as favourite by the user.
+     *
+     * @param userId    the user ID
+     * @param contentId the content ID
+     * @return {@code true} if the entry exists, otherwise {@code false}
+     */
+    public boolean isFavourite(int userId, int contentId) {
+        try {
+            return favouriteDAO.isFavourite(userId, contentId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
