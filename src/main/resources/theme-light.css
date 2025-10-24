@@ -1,0 +1,18 @@
+.root {
+    -fx-base: #f7f7f7;
+    -fx-background-color: linear-gradient(#ffffff, #f0f0f0);
+    -fx-text-fill: #1e1e1e;
+}
+
+.label {
+    -fx-text-fill: #1e1e1e;
+}
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: #dcdcdc;
+}
+
+.button {
+    -fx-background-radius: 6;
+}

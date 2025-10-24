@@ -78,8 +78,28 @@ public class ContentDAO {
         }
     }
 
+    /**
+     * Retrieve a single content entry by ID.
+     *
+     * @param contentId the identifier of the content
+     * @return the content or {@code null} if not found
+     * @throws SQLException if a database error occurs
+     */
+    public Content getContentById(int contentId) throws SQLException {
+        String sql = "SELECT * FROM Contents WHERE ContentID = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, contentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapRow(rs);
+            }
+            return null;
+        }
+    }
+
     private Content mapRow(ResultSet rs) throws SQLException {
-        return new Content(
+        Content content = new Content(
                 rs.getInt("ContentID"),
                 rs.getString("Title"),
                 rs.getString("FilePath"),
@@ -87,5 +107,7 @@ public class ContentDAO {
                 rs.getLong("Size"),
                 rs.getTimestamp("DayAdded").toLocalDateTime()
         );
+        content.setCategory("Uncategorized");
+        return content;
     }
 }

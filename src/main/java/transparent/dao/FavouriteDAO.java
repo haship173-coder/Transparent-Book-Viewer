@@ -20,7 +20,7 @@ public class FavouriteDAO {
      * @param fav the favourite entry containing the user and content IDs
      * @throws SQLException if a database error occurs
      */
-    public void toggleFavourite(Favourite fav) throws SQLException {
+    public boolean toggleFavourite(Favourite fav) throws SQLException {
         String checkSql = "SELECT FavouriteID FROM Favourites WHERE UserID = ? AND ContentID = ?";
         try (Connection conn = DBConnectionManager.getConnection();
              PreparedStatement check = conn.prepareStatement(checkSql)) {
@@ -34,6 +34,7 @@ public class FavouriteDAO {
                     delete.setInt(1, rs.getInt("FavouriteID"));
                     delete.executeUpdate();
                 }
+                return false;
             } else {
                 // Insert new favourite
                 String insertSql = "INSERT INTO Favourites (UserID, ContentID, AddedDate) VALUES (?, ?, GETDATE())";
@@ -42,8 +43,10 @@ public class FavouriteDAO {
                     insert.setInt(2, fav.getContentID());
                     insert.executeUpdate();
                 }
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -70,6 +73,20 @@ public class FavouriteDAO {
                 list.add(fav);
             }
             return list;
+        }
+    }
+
+    /**
+     * Check whether a user has marked a content item as favourite.
+     */
+    public boolean isFavourite(int userId, int contentId) throws SQLException {
+        String sql = "SELECT 1 FROM Favourites WHERE UserID = ? AND ContentID = ?";
+        try (Connection conn = DBConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, contentId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
         }
     }
 }

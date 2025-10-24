@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 
-<!-- Reader view.  Placeholder implementation showing where the content would
-     be displayed. -->
+<!-- Reader view renders images and text directly, and can open other formats
+     with the system viewer. -->
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="transparent.controller.ReaderController">
     <top>
-        <Label text="Reader View (not implemented yet)" />
+        <HBox spacing="12" alignment="CENTER_LEFT" padding="10">
+            <Label fx:id="titleLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Label fx:id="statusLabel" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button fx:id="openExternalButton" text="Mở bằng ứng dụng ngoài" disable="true" />
+            <Button fx:id="favouriteButton" text="Thêm yêu thích" />
+            <Button fx:id="closeButton" text="Đóng" />
+        </HBox>
     </top>
     <center>
-        <Label text="Content goes here" />
+        <ScrollPane fx:id="contentScroll" fitToWidth="true" fitToHeight="true">
+            <content>
+                <StackPane fx:id="contentContainer" alignment="CENTER" padding="15">
+                    <ImageView fx:id="imageView" visible="false" />
+                    <TextArea fx:id="textArea" editable="false" visible="false" wrapText="true" prefRowCount="20" />
+                    <Label fx:id="infoLabel" wrapText="true" />
+                </StackPane>
+            </content>
+        </ScrollPane>
     </center>
-    <bottom>
-        <Button fx:id="closeButton" text="Close" />
-    </bottom>
 </BorderPane>

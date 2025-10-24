@@ -1,12 +1,17 @@
 package transparent.model;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * Represents a history entry for a user reading a piece of content.  It
  * records the last page read and the last time the content was opened.
  */
-public class HistoryRecord {
+public class HistoryRecord implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private int historyID;
     private int userID;
     private int contentID;
@@ -69,5 +74,13 @@ public class HistoryRecord {
 
     public void setPageNumber(int pageNumber) {
         this.pageNumber = pageNumber;
+    }
+
+    public HistoryRecord(HistoryRecord other) {
+        this.historyID = other.historyID;
+        this.userID = other.userID;
+        this.contentID = other.contentID;
+        this.lastReadTime = other.lastReadTime;
+        this.pageNumber = other.pageNumber;
     }
 }

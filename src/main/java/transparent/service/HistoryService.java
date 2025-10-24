@@ -2,6 +2,7 @@ package transparent.service;
 
 import transparent.dao.HistoryDAO;
 import transparent.model.HistoryRecord;
+import transparent.repository.FileBackedLibraryRepository;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
 public class HistoryService {
 
     private final HistoryDAO historyDAO = new HistoryDAO();
+    private static boolean databaseAvailable = true;
+    private final FileBackedLibraryRepository offlineRepo = FileBackedLibraryRepository.getInstance();
 
     /**
      * Save or update the current reading progress for a user and content.
@@ -23,11 +26,16 @@ public class HistoryService {
      */
     public void saveProgress(int userId, int contentId, int pageNumber) {
         HistoryRecord record = new HistoryRecord(userId, contentId, pageNumber);
-        try {
-            historyDAO.upsertHistory(record);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (databaseAvailable) {
+            try {
+                historyDAO.upsertHistory(record);
+                return;
+            } catch (SQLException e) {
+                databaseAvailable = false;
+                e.printStackTrace();
+            }
         }
+        offlineRepo.saveProgress(userId, contentId, pageNumber);
     }
 
     /**
@@ -37,11 +45,14 @@ public class HistoryService {
      * @return list of history records or empty list on error
      */
     public List<HistoryRecord> getHistory(int userId) {
-        try {
-            return historyDAO.getHistoryByUser(userId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return List.of();
+        if (databaseAvailable) {
+            try {
+                return historyDAO.getHistoryByUser(userId);
+            } catch (SQLException e) {
+                databaseAvailable = false;
+                e.printStackTrace();
+            }
         }
+        return offlineRepo.getHistory(userId);
     }
 }

@@ -10,12 +10,12 @@
     <center>
         <TableView fx:id="favouritesTable">
             <columns>
-                <TableColumn fx:id="colContent" text="Content ID" />
-                <TableColumn fx:id="colAdded" text="Added" />
+                <TableColumn fx:id="colContent" text="Tiêu đề" prefWidth="280" />
+                <TableColumn fx:id="colAdded" text="Thời gian thêm" prefWidth="180" />
             </columns>
         </TableView>
     </center>
     <bottom>
-        <Button fx:id="backButton" text="Back" />
+        <Button fx:id="backButton" text="Đóng" />
     </bottom>
 </BorderPane>

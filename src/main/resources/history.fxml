@@ -11,13 +11,13 @@
     <center>
         <TableView fx:id="historyTable">
             <columns>
-                <TableColumn fx:id="colContent" text="Content ID" />
-                <TableColumn fx:id="colLastRead" text="Last Read" />
-                <TableColumn fx:id="colPage" text="Page" />
+                <TableColumn fx:id="colContent" text="Tiêu đề" prefWidth="280" />
+                <TableColumn fx:id="colLastRead" text="Lần đọc gần nhất" prefWidth="180" />
+                <TableColumn fx:id="colPage" text="Trang" prefWidth="80" />
             </columns>
         </TableView>
     </center>
     <bottom>
-        <Button fx:id="backButton" text="Back" />
+        <Button fx:id="backButton" text="Đóng" />
     </bottom>
 </BorderPane>

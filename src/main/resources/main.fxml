@@ -1,30 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
 <!-- Main library view.  Displays a search bar and a table listing all
      contents in the database. -->
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="transparent.controller.MainController">
     <top>
-        <HBox spacing="10" padding="10">
-            <TextField fx:id="searchField" promptText="Search title" />
-            <Button fx:id="searchButton" text="Search" />
-            <Button fx:id="openButton" text="Add File" />
-            <Button fx:id="historyButton" text="History" />
-            <Button fx:id="favouritesButton" text="Favourites" />
-        </HBox>
+        <VBox spacing="10" padding="10">
+            <HBox spacing="10">
+                <TextField fx:id="searchField" promptText="Tìm theo tiêu đề" />
+                <TextField fx:id="tagsField" promptText="Lọc tags (ví dụ: fantasy, drama)" />
+                <ComboBox fx:id="categoryFilter" promptText="Tất cả thể loại" prefWidth="160" />
+                <Button fx:id="searchButton" text="Lọc" />
+                <Button fx:id="themeButton" text="Chế độ tối" />
+            </HBox>
+            <HBox spacing="10">
+                <Button fx:id="openButton" text="Thêm file" />
+                <Button fx:id="toggleFavouriteButton" text="Thêm yêu thích" disable="true" />
+                <Button fx:id="historyButton" text="Lịch sử" />
+                <Button fx:id="favouritesButton" text="Yêu thích" />
+            </HBox>
+        </VBox>
     </top>
     <center>
-        <TableView fx:id="contentTable">
+        <TableView fx:id="contentTable" prefHeight="400.0">
             <columns>
-                <TableColumn fx:id="colTitle" text="Title" />
-                <TableColumn fx:id="colType" text="Type" />
-                <TableColumn fx:id="colSize" text="Size (bytes)" />
+                <TableColumn fx:id="colFavourite" text="★" prefWidth="45" />
+                <TableColumn fx:id="colTitle" text="Tiêu đề" prefWidth="200" />
+                <TableColumn fx:id="colType" text="Định dạng" prefWidth="90" />
+                <TableColumn fx:id="colCategory" text="Thể loại" prefWidth="140" />
+                <TableColumn fx:id="colTags" text="Tags" prefWidth="200" />
+                <TableColumn fx:id="colSize" text="Kích thước" prefWidth="120" />
+                <TableColumn fx:id="colAdded" text="Ngày thêm" prefWidth="160" />
             </columns>
         </TableView>
     </center>
