@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<!-- Main library view.  Displays a search bar and a table listing all
+     contents in the database. -->
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="transparent.controller.MainController">
+    <top>
+        <HBox spacing="10" padding="10">
+            <TextField fx:id="searchField" promptText="Search title" />
+            <Button fx:id="searchButton" text="Search" />
+            <Button fx:id="openButton" text="Add File" />
+            <Button fx:id="historyButton" text="History" />
+            <Button fx:id="favouritesButton" text="Favourites" />
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="contentTable">
+            <columns>
+                <TableColumn fx:id="colTitle" text="Title" />
+                <TableColumn fx:id="colType" text="Type" />
+                <TableColumn fx:id="colSize" text="Size (bytes)" />
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>
